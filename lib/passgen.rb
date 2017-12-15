@@ -124,11 +124,12 @@
 require 'digest'
 require 'passgen/probabilities'
 require 'passgen/strength_analyzer'
+require 'passgen/force_params'
 
 module Passgen
 
   VERSION = "1.0.0"
-  
+
   DEFAULT_PARAMS = {
     :number => 1,
     :length => 10,
@@ -136,7 +137,8 @@ module Passgen
     :uppercase => true,
     :digits => true,
     :symbols => false,
-    :pronounceable => false
+    :pronounceable => false,
+    :force_params => false
   }
 
   def self.default_seed
@@ -158,7 +160,7 @@ module Passgen
   def self.analyze(pw)
     Passgen::StrengthAnalyzer.analyze(pw)
   end
-  
+
   private
   def self.alphabet(index)
     if use_lowercase? && !use_uppercase?
@@ -171,13 +173,16 @@ module Passgen
       tmp
     end
   end
-  
+
   def self.generate_one(tokens)
     if @options[:pronounceable]
-      generate_pronounceable
+      pw = generate_pronounceable
     else
-      Array.new(password_length) {tokens[rand(tokens.size)]}.join
+      pw = Array.new(password_length) {tokens[rand(tokens.size)]}.join
     end
+
+    return pw unless @options[:force_params]
+    Passgen::ForceParams.regenerate(pw, @options, tokens)
   end
 
   def self.generate_pronounceable
@@ -239,7 +244,7 @@ module Passgen
     end
     digits_prefix + password + digits_suffix
   end
-  
+
   def self.password_length
     if @options[:length].is_a?(Range)
       tmp = @options[:length].to_a

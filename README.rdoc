@@ -1,3 +1,34 @@
+= Changes in `dachinat/Passgen` fork
+
+Sometimes you need to have passed parameters in each password.
+This fork adds `force_params` option to parameters, that will require each password to contain specified parameters.
+
+Without `force_params` option you may get results like these:
+
+```
+> Passgen::generate(symbols: true, length: 2, lowercase: false, uppercase: false)
+ => "13"
+> Passgen::generate(symbols: true, length: 2, lowercase: false, uppercase: false)
+ => "#?"
+```
+
+With `force_params` you will always get symbols in this specific example
+
+
+```
+> Passgen::generate(force_params: true, symbols: true, length: 2, lowercase: false, uppercase: false)
+ => "5*"
+> Passgen::generate(force_params: true, symbols: true, length: 2, lowercase: false, uppercase: false)
+ => "4("
+```
+
+This works well with `number` option that will generate array of passwords
+
+```
+> Passgen::generate(number: 10, force_params: true, symbols: true, length: 2, lowercase: false, uppercase: false)
+ => ["9$", "@2", "!0", ")8", "!2", "(0", "0/", "%4", "%6", "9/"]
+```
+
 = Passgen
 
 Ruby gem for generating passwords quickly and easily. Although it is
