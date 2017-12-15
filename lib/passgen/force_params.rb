@@ -7,6 +7,10 @@ module Passgen
       UPPERCASE_RE = /([A-Z])/
 
       def regenerate(pw, params, tokens)
+        if params[:pronounceable] == true || params[:digits_before] || params[:digits_after]
+          raise StandardError.new("Force params won't work with ':pronounceable', ':digits_before' and ':digits_after'")
+        end
+
         while !is_strong_enough(pw, params)
           pw = Passgen::generate_one(tokens)
         end
@@ -24,7 +28,7 @@ module Passgen
       end
 
       def has_sufficient_length(pw, params)
-        length = 0;
+        length = 0
         [:symbols, :digits, :lowercase, :uppercase].each { |s| length += 1 if params[s] }
         pw.length >= length
       end
